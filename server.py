@@ -27,7 +27,7 @@ news_cache = {
 }
 
 # Configuração da NewsAPI
-NEWSAPI_KEY = os.getenv('NEWSAPI_KEY')
+NEWSAPI_KEY = '52f6a339ff974745a9b033063d1c8ecb'
 NEWSAPI_BASE_URL = 'https://newsapi.org/v2'
 
 # Configuração dos sites de notícias brasileiros
