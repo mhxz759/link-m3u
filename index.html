@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal de Notícias - Direto das Fontes Brasileiras</title>
+    <meta name="description" content="Portal de notícias com as últimas informações de G1, UOL, Folha e outros sites confiáveis brasileiros">
+    
+    <style>
+        /* ===== VARIÁVEIS CSS ===== */
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --accent-color: #f59e0b;
+            --background-color: #ffffff;
+            --surface-color: #f8fafc;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --border-color: #e5e7eb;
+            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
+        [data-theme="dark"] {
+            --background-color: #111827;
+            --surface-color: #1f2937;
+            --text-primary: #f9fafb;
+            --text-secondary: #d1d5db;
+            --border-color: #374151;
+        }
+
+        /* ===== RESET E BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* ===== CABEÇALHO ===== */
+        .header {
+            background: var(--surface-color);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 0;
+            gap: 1rem;
+        }
+
+        .logo {
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            font-weight: bold;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .search-container {
+            position: relative;
+            min-width: 250px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            background: var(--background-color);
+            color: var(--text-primary);
+            font-size: 0.875rem;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgb(37 99 235 / 0.1);
+        }
+
+        .theme-toggle, .favorites-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .theme-toggle:hover, .favorites-btn:hover {
+            background: var(--border-color);
+        }
+
+        .nav {
+            border-top: 1px solid var(--border-color);
+        }
+
+        .nav-list {
+            display: flex;
+            list-style: none;
+            overflow-x: auto;
+            padding: 0.5rem 0;
+            gap: 0.5rem;
+        }
+
+        .nav-item {
+            white-space: nowrap;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 0.5rem 1rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 0.375rem;
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary-color);
+            background: rgb(37 99 235 / 0.1);
+        }
+
+        /* ===== LAYOUT PRINCIPAL ===== */
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 2rem;
+        }
+
+        .content {
+            min-width: 0;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* ===== CONTROLES ===== */
+        .controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            gap: 1rem;
+        }
+
+        .refresh-info {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .load-more-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: background-color 0.2s ease;
+        }
+
+        .load-more-btn:hover {
+            background: var(--secondary-color);
+        }
+
+        .load-more-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* ===== ARTIGOS ===== */
+        .articles-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .article-card {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        .article-card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .article-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: var(--border-color);
+        }
+
+        .article-content {
+            padding: 1.5rem;
+        }
+
+        .article-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+        }
+
+        .article-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .favorite-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.25rem;
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            transition: color 0.2s ease;
+        }
+
+        .favorite-btn.active {
+            color: var(--accent-color);
+        }
+
+        .article-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            line-height: 1.4;
+            cursor: pointer;
+        }
+
+        .article-title:hover {
+            color: var(--primary-color);
+        }
+
+        .article-description {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .article-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .article-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            background: rgb(37 99 235 / 0.1);
+            color: var(--primary-color);
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+        }
+
+        .read-more-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: background-color 0.2s ease;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .read-more-btn:hover {
+            background: var(--secondary-color);
+        }
+
+        /* ===== SKELETON LOADING ===== */
+        .skeleton {
+            background: linear-gradient(90deg, var(--border-color) 25%, rgba(255,255,255,0.1) 50%, var(--border-color) 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+        }
+
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .skeleton-card {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            overflow: hidden;
+            padding: 1.5rem;
+        }
+
+        .skeleton-image {
+            width: 100%;
+            height: 200px;
+            margin-bottom: 1rem;
+            border-radius: 0.5rem;
+        }
+
+        .skeleton-title {
+            height: 1.5rem;
+            margin-bottom: 0.75rem;
+            border-radius: 0.25rem;
+        }
+
+        .skeleton-description {
+            height: 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.25rem;
+        }
+
+        .skeleton-description:last-child {
+            width: 70%;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .widget {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+        }
+
+        .widget-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .trending-list {
+            list-style: none;
+        }
+
+        .trending-item {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .trending-item:last-child {
+            border-bottom: none;
+        }
+
+        .trending-title {
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+            line-height: 1.4;
+        }
+
+        .trending-meta {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .category-list {
+            list-style: none;
+        }
+
+        .category-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .category-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.2s ease;
+        }
+
+        .category-link:hover {
+            color: var(--primary-color);
+        }
+
+        /* ===== RODAPÉ ===== */
+        .footer {
+            background: var(--surface-color);
+            border-top: 1px solid var(--border-color);
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            text-align: center;
+        }
+
+        .footer-content {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        .footer-links {
+            margin: 1rem 0;
+        }
+
+        .footer-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            margin: 0 0.5rem;
+        }
+
+        .footer-link:hover {
+            text-decoration: underline;
+        }
+
+        /* ===== MENSAGENS ===== */
+        .toast {
+            position: fixed;
+            top: 100px;
+            right: 1rem;
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .message {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+        }
+
+        .error-message {
+            background: rgb(239 68 68 / 0.1);
+            border: 1px solid rgb(239 68 68 / 0.2);
+            color: #dc2626;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .success-message {
+            background: rgb(34 197 94 / 0.1);
+            border: 1px solid rgb(34 197 94 / 0.2);
+            color: #16a34a;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        /* ===== MODAL DE NOTÍCIA COMPLETA ===== */
+        .article-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+
+        .article-modal.show {
+            display: flex;
+        }
+
+        .article-modal-content {
+            background: var(--background-color);
+            border-radius: 0.75rem;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .article-modal-header {
+            position: sticky;
+            top: 0;
+            background: var(--surface-color);
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-radius: 0.75rem 0.75rem 0 0;
+        }
+
+        .article-modal-title {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        .close-article-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            padding: 0.25rem;
+            border-radius: 0.25rem;
+            transition: background-color 0.2s ease;
+        }
+
+        .close-article-btn:hover {
+            background: var(--border-color);
+        }
+
+        .article-modal-body {
+            padding: 2rem;
+        }
+
+        .article-full-image {
+            width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .article-full-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.3;
+        }
+
+        .article-full-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .article-full-content {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: var(--text-primary);
+        }
+
+        .article-full-content p {
+            margin-bottom: 1.5rem;
+        }
+
+        .original-link {
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .original-link a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 0.875rem;
+        }
+
+        .original-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* ===== RESPONSIVO ===== */
+        @media (max-width: 768px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+                gap: 1rem;
+            }
+
+            .sidebar {
+                order: -1;
+            }
+
+            .header-top {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .search-container {
+                min-width: auto;
+                width: 100%;
+            }
+
+            .nav-list {
+                padding: 0.5rem;
+                justify-content: flex-start;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.5rem;
+            }
+
+            .article-footer {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.75rem;
+            }
+
+            .article-modal-content {
+                margin: 0;
+                border-radius: 0;
+                max-height: 100vh;
+            }
+
+            .article-modal-header {
+                border-radius: 0;
+            }
+
+            .article-modal-body {
+                padding: 1rem;
+            }
+
+            .article-full-title {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-container {
+                padding: 0.5rem;
+            }
+
+            .article-content {
+                padding: 1rem;
+            }
+
+            .widget {
+                padding: 1rem;
+            }
+        }
+
+        /* ===== FAVORITOS MODAL ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--surface-color);
+            border-radius: 0.75rem;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+
+        .favorites-list {
+            list-style: none;
+        }
+
+        .favorite-item {
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .favorite-item:last-child {
+            border-bottom: none;
+        }
+
+        .favorite-title {
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .favorite-meta {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .remove-favorite {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
+
+        .status-indicator {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            box-shadow: var(--shadow);
+        }
+
+        .status-indicator.online {
+            border-color: #22c55e;
+            color: #22c55e;
+        }
+
+        .status-indicator.offline {
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+    </style>
+</head>
+<body>
+    <!-- CABEÇALHO -->
+    <header class="header">
+        <div class="header-container">
+            <div class="header-top">
+                <a href="#" class="logo">Portal de Notícias</a>
+                
+                <div class="header-actions">
+                    <div class="search-container">
+                        <input type="text" class="search-input" placeholder="Buscar notícias..." id="searchInput">
+                    </div>
+                    <button class="favorites-btn" id="favoritesBtn" title="Ver favoritos">⭐</button>
+                    <button class="theme-toggle" id="themeToggle" title="Alternar tema">🌙</button>
+                </div>
+            </div>
+            
+            <nav class="nav">
+                <ul class="nav-list">
+                    <li class="nav-item"><a href="#" class="nav-link active" data-category="">Todas</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link" data-category="technology">Tecnologia</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link" data-category="general">Mundo</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link" data-category="business">Economia</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link" data-category="sports">Esportes</a></li>
+                    <li class="nav-item"><a href="#" class="nav-link" data-category="entertainment">Entretenimento</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <div class="main-container">
+        <main class="content">
+            <div class="controls">
+                <div class="refresh-info" id="refreshInfo">Carregando notícias...</div>
+                <button class="load-more-btn" id="loadMoreBtn" disabled>Carregar mais</button>
+            </div>
+            
+            <div class="articles-grid" id="articlesGrid">
+                <!-- Artigos serão inseridos aqui pelo JavaScript -->
+            </div>
+        </main>
+
+        <aside class="sidebar">
+            <!-- WIDGET TRENDING -->
+            <div class="widget">
+                <h3 class="widget-title">Em Destaque</h3>
+                <ul class="trending-list" id="trendingList">
+                    <!-- Trending será inserido aqui pelo JavaScript -->
+                </ul>
+            </div>
+
+            <!-- WIDGET CATEGORIAS -->
+            <div class="widget">
+                <h3 class="widget-title">Categorias</h3>
+                <ul class="category-list">
+                    <li class="category-item"><a href="#" class="category-link" data-category="">Todas</a></li>
+                    <li class="category-item"><a href="#" class="category-link" data-category="technology">Tecnologia</a></li>
+                    <li class="category-item"><a href="#" class="category-link" data-category="general">Mundo</a></li>
+                    <li class="category-item"><a href="#" class="category-link" data-category="business">Economia</a></li>
+                    <li class="category-item"><a href="#" class="category-link" data-category="sports">Esportes</a></li>
+                    <li class="category-item"><a href="#" class="category-link" data-category="entertainment">Entretenimento</a></li>
+                </ul>
+            </div>
+
+            <!-- WIDGET FONTES -->
+            <div class="widget">
+                <h3 class="widget-title">Fontes Confiáveis</h3>
+                <ul class="category-list">
+                    <li class="category-item">• G1</li>
+                    <li class="category-item">• UOL Notícias</li>
+                    <li class="category-item">• Folha de S.Paulo</li>
+                    <li class="category-item">• O Estado de S. Paulo</li>
+                    <li class="category-item">• CNN Brasil</li>
+                </ul>
+            </div>
+        </aside>
+    </div>
+
+    <!-- MODAL DE NOTÍCIA COMPLETA -->
+    <div class="article-modal" id="articleModal">
+        <div class="article-modal-content">
+            <div class="article-modal-header">
+                <h3 class="article-modal-title">Lendo notícia completa</h3>
+                <button class="close-article-btn" id="closeArticle">&times;</button>
+            </div>
+            <div class="article-modal-body" id="articleModalBody">
+                <!-- Conteúdo da notícia será inserido aqui -->
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE FAVORITOS -->
+    <div class="modal-overlay" id="favoritesModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Meus Favoritos</h3>
+                <button class="close-btn" id="closeModal">&times;</button>
+            </div>
+            <ul class="favorites-list" id="favoritesList">
+                <!-- Favoritos serão inseridos aqui -->
+            </ul>
+        </div>
+    </div>
+
+    <!-- INDICADOR DE STATUS -->
+    <div class="status-indicator" id="statusIndicator">
+        🔄 Conectando...
+    </div>
+
+    <!-- RODAPÉ -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <p>&copy; 2025 Portal de Notícias. Todos os direitos reservados.</p>
+                <div class="footer-links">
+                    <a href="#" class="footer-link">Política de Privacidade</a>
+                    <a href="#" class="footer-link">Termos de Uso</a>
+                </div>
+                <p><strong>Notícias diretas das fontes:</strong> G1, UOL, Folha, Estadão e CNN Brasil.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        /* ===== CONFIGURAÇÃO DA API LOCAL ===== */
+        const API_BASE_URL = '/api';
+        
+        /* ===== VARIÁVEIS GLOBAIS ===== */
+        let currentPage = 1;
+        let currentCategory = '';
+        let currentQuery = '';
+        let isLoading = false;
+        let allArticles = [];
+        let favorites = JSON.parse(localStorage.getItem('news-favorites') || '[]');
+        let autoRefreshInterval;
+
+        /* ===== ELEMENTOS DOM ===== */
+        const articlesGrid = document.getElementById('articlesGrid');
+        const loadMoreBtn = document.getElementById('loadMoreBtn');
+        const searchInput = document.getElementById('searchInput');
+        const refreshInfo = document.getElementById('refreshInfo');
+        const trendingList = document.getElementById('trendingList');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const categoryLinks = document.querySelectorAll('.category-link');
+        const themeToggle = document.getElementById('themeToggle');
+        const favoritesBtn = document.getElementById('favoritesBtn');
+        const favoritesModal = document.getElementById('favoritesModal');
+        const closeModal = document.getElementById('closeModal');
+        const favoritesList = document.getElementById('favoritesList');
+        const articleModal = document.getElementById('articleModal');
+        const closeArticle = document.getElementById('closeArticle');
+        const articleModalBody = document.getElementById('articleModalBody');
+        const statusIndicator = document.getElementById('statusIndicator');
+
+        /* ===== INICIALIZAÇÃO ===== */
+        document.addEventListener('DOMContentLoaded', function() {
+            initTheme();
+            initEventListeners();
+            checkAPIHealth();
+            fetchNews();
+            startAutoRefresh();
+        });
+
+        /* ===== FUNÇÕES DE INICIALIZAÇÃO ===== */
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeIcon(savedTheme);
+        }
+
+        function initEventListeners() {
+            // Busca com debounce
+            let searchTimeout;
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    currentQuery = this.value.trim();
+                    currentPage = 1;
+                    fetchNews(true);
+                }, 400);
+            });
+
+            // Navegação por categoria
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    setActiveNavLink(this);
+                    currentCategory = this.dataset.category;
+                    currentPage = 1;
+                    fetchNews(true);
+                });
+            });
+
+            categoryLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    currentCategory = this.dataset.category;
+                    currentPage = 1;
+                    setActiveNavLink(document.querySelector(`.nav-link[data-category="${currentCategory}"]`));
+                    fetchNews(true);
+                });
+            });
+
+            // Carregar mais
+            loadMoreBtn.addEventListener('click', function() {
+                currentPage++;
+                fetchNews(false);
+            });
+
+            // Alternador de tema
+            themeToggle.addEventListener('click', toggleTheme);
+
+            // Modal de favoritos
+            favoritesBtn.addEventListener('click', openFavoritesModal);
+            closeModal.addEventListener('click', closeFavoritesModal);
+            favoritesModal.addEventListener('click', function(e) {
+                if (e.target === this) closeFavoritesModal();
+            });
+
+            // Modal de artigo
+            closeArticle.addEventListener('click', closeArticleModal);
+            articleModal.addEventListener('click', function(e) {
+                if (e.target === this) closeArticleModal();
+            });
+
+            // Tecla ESC para fechar modais
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeArticleModal();
+                    closeFavoritesModal();
+                }
+            });
+        }
+
+        /* ===== FUNÇÕES DE API ===== */
+        async function checkAPIHealth() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/health`);
+                if (response.ok) {
+                    updateStatus('online', '🟢 Conectado às fontes de notícias');
+                } else {
+                    updateStatus('offline', '🔴 Erro na conexão');
+                }
+            } catch (error) {
+                updateStatus('offline', '🔴 Servidor offline');
+            }
+        }
+
+        async function fetchNews(reset = false) {
+            if (isLoading) return;
+            
+            isLoading = true;
+            loadMoreBtn.disabled = true;
+
+            if (reset) {
+                articlesGrid.innerHTML = '';
+                renderSkeleton();
+                allArticles = [];
+            }
+
+            try {
+                const params = new URLSearchParams({
+                    page: currentPage,
+                    pageSize: 20
+                });
+
+                if (currentCategory) {
+                    params.append('category', currentCategory);
+                }
+
+                if (currentQuery) {
+                    params.append('q', currentQuery);
+                }
+
+                const response = await fetch(`${API_BASE_URL}/news?${params}`);
+                
+                if (!response.ok) {
+                    throw new Error(`Erro ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+
+                if (data.status === 'error') {
+                    throw new Error(data.message || 'Erro na API');
+                }
+
+                const articles = data.articles || [];
+
+                if (reset) {
+                    allArticles = articles;
+                    articlesGrid.innerHTML = '';
+                } else {
+                    allArticles = [...allArticles, ...articles];
+                }
+
+                renderNews(articles);
+                updateTrending();
+                updateRefreshInfo();
+                updateStatus('online', '🟢 Notícias atualizadas');
+
+                loadMoreBtn.disabled = articles.length < 20;
+
+            } catch (error) {
+                console.error('Erro ao buscar notícias:', error);
+                showError(`Falha ao buscar notícias: ${error.message}`);
+                updateStatus('offline', '🔴 Erro ao carregar notícias');
+            } finally {
+                isLoading = false;
+            }
+        }
+
+        /* ===== FUNÇÕES DE RENDERIZAÇÃO ===== */
+        function renderNews(articles) {
+            if (!articles || articles.length === 0) {
+                if (currentPage === 1) {
+                    articlesGrid.innerHTML = '<div class="message">Nenhuma notícia encontrada.</div>';
+                }
+                return;
+            }
+
+            articles.forEach((article, index) => {
+                const articleElement = createArticleElement(article, index);
+                articlesGrid.appendChild(articleElement);
+            });
+        }
+
+        function createArticleElement(article, index) {
+            const articleDiv = document.createElement('article');
+            articleDiv.className = 'article-card';
+            articleDiv.style.animationDelay = `${index * 0.1}s`;
+
+            const isFavorite = favorites.some(fav => fav.id === article.id);
+            const publishedAt = new Date(article.publishedAt);
+            const formattedDate = publishedAt.toLocaleDateString('pt-BR', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            articleDiv.innerHTML = `
+                ${article.urlToImage ? `<img src="${article.urlToImage}" alt="${article.title}" class="article-image" loading="lazy">` : ''}
+                <div class="article-content">
+                    <div class="article-header">
+                        <div class="article-meta">
+                            <span>${formattedDate}</span>
+                            <span>• ${article.source?.name || 'Portal'}</span>
+                        </div>
+                        <button class="favorite-btn ${isFavorite ? 'active' : ''}" onclick="toggleFavorite('${article.id}')" title="Adicionar aos favoritos">
+                            ${isFavorite ? '⭐' : '☆'}
+                        </button>
+                    </div>
+                    <h2 class="article-title" onclick="openArticle('${article.id}')">${article.title}</h2>
+                    ${article.description ? `<p class="article-description">${article.description}</p>` : ''}
+                    <div class="article-footer">
+                        <div class="article-tags">
+                            ${article.category ? `<span class="tag">${getCategoryName(article.category)}</span>` : ''}
+                            ${article.source?.name ? `<span class="tag">${article.source.name}</span>` : ''}
+                        </div>
+                        <button class="read-more-btn" onclick="openArticle('${article.id}')">Ler completa</button>
+                    </div>
+                </div>
+            `;
+
+            return articleDiv;
+        }
+
+        function renderSkeleton() {
+            articlesGrid.innerHTML = '';
+            for (let i = 0; i < 6; i++) {
+                const skeletonDiv = document.createElement('div');
+                skeletonDiv.className = 'skeleton-card';
+                skeletonDiv.innerHTML = `
+                    <div class="skeleton skeleton-image"></div>
+                    <div class="skeleton skeleton-title"></div>
+                    <div class="skeleton skeleton-description"></div>
+                    <div class="skeleton skeleton-description"></div>
+                `;
+                articlesGrid.appendChild(skeletonDiv);
+            }
+        }
+
+        function updateTrending() {
+            const trending = allArticles.slice(0, 5);
+            trendingList.innerHTML = '';
+
+            if (trending.length === 0) {
+                trendingList.innerHTML = '<li class="trending-item"><div class="trending-title">Carregando...</div></li>';
+                return;
+            }
+
+            trending.forEach(article => {
+                const li = document.createElement('li');
+                li.className = 'trending-item';
+                li.innerHTML = `
+                    <div class="trending-title">${article.title}</div>
+                    <div class="trending-meta">${article.source?.name || 'Portal'}</div>
+                `;
+                li.style.cursor = 'pointer';
+                li.addEventListener('click', () => openArticle(article.id));
+                trendingList.appendChild(li);
+            });
+        }
+
+        /* ===== FUNÇÕES DE ARTIGO COMPLETO ===== */
+        async function openArticle(articleId) {
+            try {
+                articleModalBody.innerHTML = '<div style="text-align: center; padding: 2rem;">Carregando...</div>';
+                articleModal.classList.add('show');
+                document.body.style.overflow = 'hidden';
+
+                const response = await fetch(`${API_BASE_URL}/article/${articleId}`);
+                
+                if (!response.ok) {
+                    throw new Error('Artigo não encontrado');
+                }
+
+                const article = await response.json();
+                
+                const publishedAt = new Date(article.publishedAt);
+                const formattedDate = publishedAt.toLocaleDateString('pt-BR', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                articleModalBody.innerHTML = `
+                    ${article.urlToImage ? `<img src="${article.urlToImage}" alt="${article.title}" class="article-full-image">` : ''}
+                    <h1 class="article-full-title">${article.title}</h1>
+                    <div class="article-full-meta">
+                        <span>📅 ${formattedDate}</span>
+                        <span>📰 ${article.source?.name || 'Portal'}</span>
+                        <span>🏷️ ${getCategoryName(article.category)}</span>
+                    </div>
+                    <div class="article-full-content">
+                        ${formatContent(article.content || article.description)}
+                    </div>
+                    <div class="original-link">
+                        <a href="${article.url}" target="_blank" rel="noopener noreferrer">
+                            Ver artigo original no site da ${article.source?.name || 'fonte'}
+                        </a>
+                    </div>
+                `;
+
+            } catch (error) {
+                console.error('Erro ao carregar artigo:', error);
+                articleModalBody.innerHTML = `
+                    <div class="error-message">
+                        Erro ao carregar o artigo: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        function closeArticleModal() {
+            articleModal.classList.remove('show');
+            document.body.style.overflow = 'auto';
+        }
+
+        function formatContent(content) {
+            if (!content) return '<p>Conteúdo não disponível.</p>';
+            
+            // Quebra o conteúdo em parágrafos
+            const paragraphs = content.split(/\n\s*\n|\.\s+(?=[A-Z])/);
+            
+            return paragraphs
+                .filter(p => p.trim().length > 50) // Remove parágrafos muito curtos
+                .map(p => `<p>${p.trim()}</p>`)
+                .join('');
+        }
+
+        /* ===== FUNÇÕES DE FAVORITOS ===== */
+        function toggleFavorite(articleId) {
+            const article = allArticles.find(a => a.id === articleId);
+            if (!article) return;
+
+            const existingIndex = favorites.findIndex(fav => fav.id === articleId);
+            
+            if (existingIndex >= 0) {
+                favorites.splice(existingIndex, 1);
+            } else {
+                favorites.push({
+                    id: article.id,
+                    title: article.title,
+                    source: article.source?.name || 'Portal',
+                    publishedAt: article.publishedAt,
+                    url: article.url
+                });
+            }
+
+            localStorage.setItem('news-favorites', JSON.stringify(favorites));
+            
+            // Atualizar UI
+            const favBtn = document.querySelector(`[onclick="toggleFavorite('${articleId}')"]`);
+            if (favBtn) {
+                const isFavorite = favorites.some(fav => fav.id === articleId);
+                favBtn.className = `favorite-btn ${isFavorite ? 'active' : ''}`;
+                favBtn.innerHTML = isFavorite ? '⭐' : '☆';
+            }
+        }
+
+        function openFavoritesModal() {
+            favoritesList.innerHTML = '';
+            
+            if (favorites.length === 0) {
+                favoritesList.innerHTML = '<div class="message">Nenhuma notícia favoritada ainda.</div>';
+            } else {
+                favorites.forEach(favorite => {
+                    const li = document.createElement('li');
+                    li.className = 'favorite-item';
+                    const formattedDate = new Date(favorite.publishedAt).toLocaleDateString('pt-BR');
+                    
+                    li.innerHTML = `
+                        <div class="favorite-title">${favorite.title}</div>
+                        <div class="favorite-meta">
+                            <span>${favorite.source} • ${formattedDate}</span>
+                            <button class="remove-favorite" onclick="removeFavorite('${favorite.id}')">Remover</button>
+                        </div>
+                    `;
+                    li.style.cursor = 'pointer';
+                    li.addEventListener('click', (e) => {
+                        if (!e.target.classList.contains('remove-favorite')) {
+                            openArticle(favorite.id);
+                        }
+                    });
+                    favoritesList.appendChild(li);
+                });
+            }
+            
+            favoritesModal.classList.add('show');
+        }
+
+        function closeFavoritesModal() {
+            favoritesModal.classList.remove('show');
+        }
+
+        function removeFavorite(articleId) {
+            favorites = favorites.filter(fav => fav.id !== articleId);
+            localStorage.setItem('news-favorites', JSON.stringify(favorites));
+            openFavoritesModal(); // Recarregar modal
+            
+            // Atualizar botão de favorito se visível
+            const favBtn = document.querySelector(`[onclick="toggleFavorite('${articleId}')"]`);
+            if (favBtn) {
+                favBtn.className = 'favorite-btn';
+                favBtn.innerHTML = '☆';
+            }
+        }
+
+        /* ===== FUNÇÕES DE TEMA ===== */
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        }
+
+        function updateThemeIcon(theme) {
+            themeToggle.innerHTML = theme === 'dark' ? '☀️' : '🌙';
+        }
+
+        /* ===== FUNÇÕES DE ATUALIZAÇÃO AUTOMÁTICA ===== */
+        function startAutoRefresh() {
+            autoRefreshInterval = setInterval(() => {
+                if (!isLoading) {
+                    currentPage = 1;
+                    fetchNews(true);
+                    showToast(`Atualizado às ${new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`);
+                }
+            }, 300000); // 5 minutos
+        }
+
+        function updateRefreshInfo() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            refreshInfo.textContent = `Última atualização: ${timeString}`;
+        }
+
+        /* ===== FUNÇÕES UTILITÁRIAS ===== */
+        function setActiveNavLink(activeLink) {
+            navLinks.forEach(link => link.classList.remove('active'));
+            if (activeLink) activeLink.classList.add('active');
+        }
+
+        function getCategoryName(category) {
+            const categories = {
+                technology: 'Tecnologia',
+                general: 'Mundo',
+                business: 'Economia',
+                sports: 'Esportes',
+                entertainment: 'Entretenimento'
+            };
+            return categories[category] || 'Geral';
+        }
+
+        function updateStatus(status, message) {
+            statusIndicator.className = `status-indicator ${status}`;
+            statusIndicator.textContent = message;
+            
+            setTimeout(() => {
+                if (status === 'online') {
+                    statusIndicator.textContent = '🟢 Online';
+                }
+            }, 3000);
+        }
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => toast.classList.add('show'), 100);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => document.body.removeChild(toast), 300);
+            }, 3000);
+        }
+
+        function showError(message) {
+            articlesGrid.innerHTML = `<div class="error-message">${message}</div>`;
+        }
+
+        /* ===== LIMPEZA ===== */
+        window.addEventListener('beforeunload', function() {
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+            }
+        });
+
+        // Verificação periódica da saúde da API
+        setInterval(checkAPIHealth, 30000); // A cada 30 segundos
+    </script>
+</body>
+</html>
